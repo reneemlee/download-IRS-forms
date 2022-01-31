@@ -4,6 +4,29 @@ import json
 import os
 
 def get_product_info(forms):
+    """Return information on list of forms
+    
+    >>> print(get_product_info(["Form W-4"]))
+    [
+        {
+            "form_number": "Form W-4",
+            "form_title": "Employee's Withholding Certificate",
+            "min_year": 1990,
+            "max_year": 2022
+        }
+    ]
+
+    >>> print(get_product_info(["Form XYZ", "Form W-2"]))
+    Form XYZ does not exist. Please enter valid search
+    [
+        {
+            "form_number": "Form W-2",
+            "form_title": "Wage and Tax Statement (Info Copy Only)",
+            "min_year": 1954,
+            "max_year": 2022
+        }
+    ]
+    """
 
     url = "https://apps.irs.gov/app/picklist/list/priorFormPublication.html?"
 
@@ -55,11 +78,10 @@ def get_product_info(forms):
             results_list.append(results)
         except:
             print(f'{item} does not exist. Please enter valid search')
-
-    with open('results.json', 'w') as f:
-        json.dump(results_list, f, indent=8, ensure_ascii=False)
-    
-    print("JSON file created")
+        
+        if results_list != []:
+            results_json = json.dumps(results_list, indent=4)
+            return results_json
 
 def download_forms(form,beg,end):        
     url = "https://apps.irs.gov/app/picklist/list/priorFormPublication.html?"
