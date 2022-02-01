@@ -1,7 +1,31 @@
-from bs4 import BeautifulSoup
-import requests
 import json
 import os
+import re
+import requests
+
+from bs4 import BeautifulSoup
+
+YEAR_RE = re.compile(r".*([1-3][0-9]{3})")
+
+def return_response_from_irs(form):
+    """Request from IRS"""
+
+    url = "https://apps.irs.gov/app/picklist/list/priorFormPublication.html?"
+
+    params = { 'value': form,
+                'criteria': 'formNumber',
+                'submitSearch': 'Find',
+                'resultsPerPage': 200,
+                'indexOfFirstRow': 0,
+                'sortColumn': 'sortOrder',
+                'isDescending':'false'
+            }
+
+    response = requests.get(url, params=params)
+
+    response_txt = BeautifulSoup(response.text, "html.parser")   
+
+    return response_txt
 
 def get_product_info(forms):
     """Return information on list of forms
@@ -27,29 +51,15 @@ def get_product_info(forms):
         }
     ]
     """
-
-    url = "https://apps.irs.gov/app/picklist/list/priorFormPublication.html?"
-
+    
     results_list = []
     
-    for item in forms:
-        params = { 'value': {item},
-                    'criteria': 'formNumber',
-                    'submitSearch': 'Find',
-                    'resultsPerPage': 200,
-                    'indexOfFirstRow': 0,
-                    'sortColumn': 'sortOrder',
-                    'isDescending':'false'
-                }
-        response = requests.get(url, params=params)
+    for form in forms:
+        search_results = return_response_from_irs(form)
 
-        soup = BeautifulSoup(response.text, "html.parser")   
+        containers = search_results.find_all('tr', {"class": ["odd", "even"]})
 
-        #html tag for the results
-        #TODO:do we need this? or can we just do find_all for the leftcellspacer etc.
-        containers = soup.find_all('tr', {"class": ["odd", "even"]})
-
-        lst = []
+        matches = []
         
         for container in containers:
             form_number = container.find('td', class_='LeftCellSpacer').text.strip()
@@ -61,13 +71,13 @@ def get_product_info(forms):
                     'year': int(year),
                     }
             #if form number matches search value, append dict to results
-            if item == data['form_number']:
-                lst.append(data)
+            if form == data['form_number']:
+                matches.append(data)
             
         #returns the min and max year of a form
         try:
-            min_year = min(lst, key=lambda k : k['year'])
-            max_year = max(lst, key=lambda k : k['year'])
+            min_year = min(matches, key=lambda k : k['year'])
+            max_year = max(matches, key=lambda k : k['year'])
             
             results = {'form_number': max_year['form_number'],
                         'form_title' : max_year['form_title'],
@@ -77,30 +87,25 @@ def get_product_info(forms):
             
             results_list.append(results)
         except:
-            print(f'{item} does not exist. Please enter valid search')
+            print(f'{form} does not exist. Please enter valid search')
         
-        if results_list != []:
-            results_json = json.dumps(results_list, indent=4)
-            return results_json
+    if results_list != []:
+        results_json = json.dumps(results_list, indent=4)
+        return results_json
 
 def download_forms(form,beg,end):
-    """Download available forms within a given range"""        
+    """Download available forms within a given range""" 
 
-    url = "https://apps.irs.gov/app/picklist/list/priorFormPublication.html?"
-    
-    params = { 'value': form,
-                'criteria': 'formNumber',
-                'submitSearch': 'Find',
-                'resultsPerPage': 200,
-                'indexOfFirstRow': 0,
-                'sortColumn': 'sortOrder',
-                'isDescending':'false'
-            }
-    response = requests.get(url, params=params)
+    check_beg = re.search(YEAR_RE,str(beg))
+    check_end = re.search(YEAR_RE,str(end))
 
-    soup = BeautifulSoup(response.text, "html.parser")   
+    if not check_beg and check_end:
+         print("Please enter valid year range")
+         quit()
+         
+    search_results = return_response_from_irs(form)       
 
-    containers = soup.find_all('tr', {"class": ["odd", "even"]})
+    containers = search_results.find_all('tr', {"class": ["odd", "even"]})
 
     results = []
     
@@ -122,6 +127,7 @@ def download_forms(form,beg,end):
     if results == []:
         print("Please enter valid form number")
     
+    #create subdirectory
     current_dir = os.getcwd() 
     new_dir = f'{current_dir}/downloads'
     if not os.path.isdir(new_dir):
@@ -132,7 +138,9 @@ def download_forms(form,beg,end):
         file = requests.get(result['form_link'])
 
         with open(f"{new_dir}/{file_name}", 'wb') as f:
-            f.write(file.content)    
+            f.write(file.content) 
+
+
 
 
 
