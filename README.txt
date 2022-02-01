@@ -10,9 +10,9 @@ I chose BeautifulSoup for its ease of use working with static websites.
 -----
 
 REFLECTION:
-In addition to fulfilling the requirements, I added error handling in response to invalid form numbers and regex matching search years. I also incorprated doctests and unittests to verify my outputs.
+In addition to fulfilling the requirements, I added error handling for invalid form numbers and search years. I also incorporated doctests and unittests to verify my outputs.
 
-Given more time, I'd like to add additional tests, including testing if given a range of valid years, my function will download all forms that exist within that range, with the earliest form revision date matching the minimum year.I'd also add corresponding error messages if the user input begin/end years fall outside of a form's revision dates.
+Given more time, I'd like to add additional tests, including testing for given a range of valid years, my function will download all forms within that range, with the earliest form revision date matching the minimum year and latest matching the max year. I'd also add corresponding error messages if the begin/end years input fall outside of a form's revision dates.
 
 -----
 
@@ -59,7 +59,7 @@ In the command line:
             }
         ]
 
-    To download a given tax form from range of years, use download_forms function and pass in the form name in a string, the start range of the year, then the range end. The returned forms are an exact match and will be downloaded to a subdirectory named "downloads" under the script's main directory with the name of the form as "Form Name - Year":
+    To download a given tax form from range of years, use download_forms function and pass in the form name in a string, the start year, then end year. The returned forms are an exact match and will be downloaded to a subdirectory named "downloads" under the script's main directory with the name of the form as "Form Name - Year":
 
     ex: >>> download_forms("Form W-2",2000,2005)
 

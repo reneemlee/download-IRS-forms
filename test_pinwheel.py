@@ -28,7 +28,7 @@ class DownloadFormsTestCase(unittest.TestCase):
         pw.download_forms("Form W-2",2000,2000)
         f1 = "downloads/Form W-2 - 2000.pdf"
         f2 = "Form W-2 - 2000.pdf"
-        comp = cmp(f1,f2)
+        return self.assertTrue(cmp(f1,f2))
         
 def load_tests(loader, tests, ignore):
     tests.addTests(doctest.DocTestSuite(pw))
