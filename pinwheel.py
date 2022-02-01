@@ -60,7 +60,7 @@ def get_product_info(forms):
                     'form_title' : form_title,
                     'year': int(year),
                     }
-            #if form number matches search value, append the dic to results
+            #if form number matches search value, append dict to results
             if item == data['form_number']:
                 lst.append(data)
             
@@ -83,7 +83,9 @@ def get_product_info(forms):
             results_json = json.dumps(results_list, indent=4)
             return results_json
 
-def download_forms(form,beg,end):        
+def download_forms(form,beg,end):
+    """Download available forms within a given range"""        
+
     url = "https://apps.irs.gov/app/picklist/list/priorFormPublication.html?"
     
     params = { 'value': form,
