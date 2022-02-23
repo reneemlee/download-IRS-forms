@@ -19,7 +19,7 @@ Given more time, I'd like to add additional tests, including testing for given a
 INSTALLATION:
 To run FIND THE FORMS on your local machine, follow the instructions below(built using Python 3.9.6):
 
-    Download and open the zipped file: pinwheel-takehome-main.zip
+    Download ZIP and open scraper.py
 
     Create and activate a virtual environment inside your project directory:
 
@@ -35,8 +35,8 @@ To run FIND THE FORMS on your local machine, follow the instructions below(built
 HOW TO RUN:
 In the command line:
     
-    Run pinwheel.py interactively: 
-        $ python3 -i pinwheel.py
+    Run scraper.py interactively: 
+        $ python3 -i scraper.py
 
     To return informational results, use the get_product_info function. It takes in a list of form names as argument and returns the exact match output as json in the same format as the given instructions:
 
@@ -76,7 +76,7 @@ TESTS:
 In command line:
 
     Run tests using:
-        $ python3 test_pinwheel.py
+        $ python3 test_scraper.py
 
 
 

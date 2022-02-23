@@ -4,7 +4,7 @@ import os
 import requests
 import unittest
 
-import pinwheel as pw
+import scraper as pw
 
 class DownloadFormsTestCase(unittest.TestCase):
 
