@@ -1,4 +1,3 @@
-FIND THE FORMS CHALLENGE
 DESCRIPTION:
 This project allows you to look up information on IRS tax forms and download them.
 
